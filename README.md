@@ -1,3 +1,4 @@
 # Photomania
-## 利用500PX显示图片的一个app
+## 利用CollectionView显示500PX.com上面图片的App
+
 

@@ -35,36 +35,36 @@ class PhotoBrowserCollectionViewController: UICollectionViewController, UICollec
   }
     
     func populatePhotos() {
-        // 2
+        // 如果正在加载图片则直接返回
         if populatingPhotos {
             return
         }
         
         populatingPhotos = true
         
-        // 3
+        // 加载热门图片
         Alamofire.request(Five100px.Router.PopularPhotos(self.currentPage)).responseJSON() {
             (_, _, JSON, error) in
             
             if error == nil {
-                // 4
+                // 解析数据放到一个新的高优先级线程里面
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0)) {
-                    // 5, 6, 7
+                    // 筛选不安全图片（nsfw）
                     let photoInfos = ((JSON as! NSDictionary).valueForKey("photos") as! [NSDictionary]).filter({ ($0["nsfw"] as! Bool) == false }).map { PhotoInfo(id: $0["id"] as! Int, url: $0["image_url"] as! String) }
                     
-                    // 8
+                    // 记录最后一个图片的编号
                     let lastItem = self.photos.count
-                    // 9
+                    
                     self.photos.addObjectsFromArray(photoInfos)
                     
-                    // 10
+                    
                     let indexPaths = (lastItem..<self.photos.count).map { NSIndexPath(forItem: $0, inSection: 0) }
                     
-                    // 11
+                    // 在数线程更新UI
                     dispatch_async(dispatch_get_main_queue()) {
                         self.collectionView!.insertItemsAtIndexPaths(indexPaths)
                     }
-                    
+                    // 当前页加一
                     self.currentPage++
                 }
             }

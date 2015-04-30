@@ -24,6 +24,10 @@ class PhotoCommentsViewController: UITableViewController {
     title = "Comments"
     navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .Done, target: self, action: "dismiss")
     
+    //增加优化返回手势
+    let gesture = UIScreenEdgePanGestureRecognizer(target: self, action: "dismiss")
+    self.view.addGestureRecognizer(gesture)
+    
     Alamofire.request(Five100px.Router.Comments(photoID,1)).validate().responseCollection { (_, _, comments: [Comment]?, error) -> Void in
         
         if error == nil {
@@ -32,6 +36,8 @@ class PhotoCommentsViewController: UITableViewController {
             self.tableView.reloadData()
         }
     }
+    
+   
   }
   
   func dismiss() {
